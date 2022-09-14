@@ -1,18 +1,27 @@
-function manualFormatter() {
+function manualFormatter(obj) {
 
     // recupero il valore dall'id dell'elemento
     let soldi = document.getElementById("soldi").value;
     // controllo che vengano inserite solo cifre e virgole/punti
-    let soloNumeri = /^(?!,$)[\d,.]+$/.test(soldi); // (?!,$) negative lookahead, per non avere solo la virgola come unico carattere
+    let soloNumeri = /^(?!,$)[\d,.]+$/.test(soldi); 
+    // (?!,$) negative lookahead, per non avere solo la virgola come unico carattere
 
     while (!soloNumeri) {
-        confirm("Capra!");
+        $('#simboliNonPermessiModal').on('show.bs.modal', function () {
+            // Update the modal's content.(jQuery)
+            var modal = $(this);
+            modal.find('.modal-title').text('Attenzione!');
+            modal.find('.modal-body').text("Hai inserito un importo non valido: " + soldi);
+        })
+
+        $('#simboliNonPermessiModal').modal();
+
         return;
     }
 
     // test in console
-    console.log("Hai inserito: " + soldi)
-    console.log("Tipo: " + typeof(soldi))
+    console.log("Hai inserito: " + soldi);
+    console.log("Tipo: " + typeof(soldi));
     
     // elimino i punti e splitto la stringa alla virgola (altrimenti devo cancellare e riscrivere il numero per intero)
     soldiSenzaPunti = soldi.replaceAll('.', '');
@@ -38,7 +47,13 @@ function manualFormatter() {
         soldiDivisi[1] = soldiDivisi[1].padEnd(2, '0');
     } else if (soldiDivisi[1].length > 2) {
         // se più di 3 cifre decimali
-        alert("Non si arrotonda niente.");
+        $('#arrotondaModal').on('show.bs.modal', function () {
+            // Update the modal's content. (jQuery)
+            var modal = $(this);
+            modal.find('.modal-title').text('Attenzione!');
+            modal.find('.modal-body').text("Hai inserito " + soldiDivisi[1].length + " cifre decimali." );
+        })
+        $('#arrotondaModal').modal();
     }
 
     // rimetto insieme le due stringhe
@@ -59,10 +74,12 @@ function localeFormatter() {
 function internationalFormatter() {
     let soldi = parseInt(document.getElementById("cash").value);
     console.log(typeof(soldi))
+
     var formatter = new Intl.NumberFormat('it-IT', {
         style: 'currency',
         currency: 'EUR',
     });
+
     formatter.format(soldi);
     console.log("Formattato con Intl: " + soldi);
    
